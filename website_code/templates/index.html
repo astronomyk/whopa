@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="600"> <!-- Auto-refresh every 10 mins -->
+    <title>WHOPA Dashboard</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: sans-serif;
+            background-color: #f9f9f9;
+        }
+        img {
+            max-width: 90%;
+            border: 1px solid #ccc;
+        }
+        h2 {
+            margin-top: 20px;
+        }
+        p {
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    {% include "_navbar.html" %}
+
+    <img src="{{ url_for('static', filename='logos/dashboard_banner.png') }}"
+         alt="The WHOPA Dashboard"
+         style="width: 800px; max-width: 100%; margin-top: 10px;">
+
+    <hr>
+
+    <div style="margin-top: 10px; font-size: 1.1em;">
+        <h3>📡 Sun and Moon</h3>
+        <p>
+            🕒 Local Time ({{ celestial.timezone }}): <strong>{{ celestial.local_time }}</strong> on {{ celestial.local_date }}
+        </p>
+
+        <p>
+            🌕 Moon Altitude:
+            <span style="color: {{ 'darkred' if celestial.moon_alt > 0 else 'green' }};">
+                {{ "%.1f"|format(celestial.moon_alt) }}°
+            </span>
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            <span style="margin-left: 10px;">
+                {{ celestial.moon_emoji }} &nbsp; {{ celestial.moon_illum }}% illuminated
+            </span>
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            🌙 Moon Rise: {{ celestial.moon_rise }}
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            🌌 Moon Set: {{ celestial.moon_set }}
+        </p>
+
+        <p>
+            🌞 Sun Altitude:
+            <span style="color: {{ 'darkred' if celestial.sun_alt > 0 else 'green' }};">
+                {{ "%.1f"|format(celestial.sun_alt) }}°
+            </span>
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            🌄 Sun Rise: {{ celestial.sun_rise }}
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            🌇 Sun Set: {{ celestial.sun_set }}
+        </p>
+
+    </div>
+
+    <hr>
+
+    <div style="margin-top: 20px; font-size: 1.1em;">
+        <h3>Sky (RA) Reference Points </h3>
+        <p> ⬅️ RA (East): {{ celestial.east_ra }}°
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            🔝 <strong>RA (Zenith): {{ celestial.zenith_ra }}°</strong>
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            ➡️ RA (West): {{ celestial.west_ra }}°
+        </p>
+
+        <p>
+            🔝 <strong>Dec (Zenith): {{ celestial.zenith_dec }}°</strong>
+        </p>
+    </div>
+
+    <div style="margin-top: 20px; font-size: 1.05em;">
+        <h3>🔭 Tracked Celestial Targets</h3>
+        <div style="max-width: 800px; margin: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #ccc;">
+                        <th>Object</th>
+                        <th>Alt (°)</th>
+                        <th>Az (°)</th>
+                        <th>Status</th>
+                        <th>Next Rise >30°</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if celestial.lmc_alt is not none %}
+                    <tr>
+                        <td>🌀 <strong>LMC</strong></td>
+                        <td>{{ celestial.lmc_alt }}</td>
+                        <td>{{ celestial.lmc_az }}</td>
+                        <td><strong>{{ celestial.lmc_status }}</strong></td>
+                        <td>{{ celestial.lmc_next_rise }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if celestial.m42_alt is not none %}
+                    <tr>
+                        <td>🌌 <strong>M42</strong></td>
+                        <td>{{ celestial.m42_alt }}</td>
+                        <td>{{ celestial.m42_az }}</td>
+                        <td><strong>{{ celestial.m42_status }}</strong></td>
+                        <td>{{ celestial.m42_next_rise }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if celestial.sgrA_alt is not none %}
+                    <tr>
+                        <td>✨ <strong>Sgr A*</strong></td>
+                        <td>{{ celestial.sgrA_alt }}</td>
+                        <td>{{ celestial.sgrA_az }}</td>
+                        <td><strong>{{ celestial.sgrA_status }}</strong></td>
+                        <td>{{ celestial.sgrA_next_rise }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr>
+
+    <img src="{{ url_for('wind_map') }}"
+         alt="Wind Map"
+         style="width: 800px; max-width: 100%; margin-top: 10px;">
+
+    <form method="POST" action="/refresh" style="margin-top: 20px;">
+        <button type="submit">🔄 Refresh Wind Map</button>
+    </form>
+    <p>Auto-refreshes every 10 minutes</p>
+
+    <hr>
+    <h3>Observatory Roof Controls</h3>
+
+    <form method="POST">
+        <button type="submit" name="open_roof" style="padding: 10px 20px; font-size: 16px;">Open Roof</button>
+        <button type="submit" name="close_roof" style="padding: 10px 20px; font-size: 16px;">Close Roof</button>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul style="list-style: none; padding: 0; margin-top: 1em;">
+          {% for message in messages %}
+            <li style="color: darkred; font-weight: bold;">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+</body>
+</html>

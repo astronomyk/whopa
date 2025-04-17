@@ -1,0 +1,22 @@
+<nav style="
+    background-color: #222;
+    padding: 12px 0;
+    text-align: center;
+    font-size: 1.5em;
+    font-family: sans-serif;
+">
+  <a href="{{ url_for('index') }}"
+     style="color: white; margin: 0 20px; text-decoration: none; font-weight: bold;">
+     🏠 Dashboard
+  </a>
+
+  <a href="{{ url_for('telescope_page') }}"
+     style="color: white; margin: 0 20px; text-decoration: none;">
+     🔭 Telescope Control
+  </a>
+
+  <a href="{{ url_for('webcam_page') }}"
+     style="color: white; margin: 0 20px; text-decoration: none;">
+     📷 Webcam
+  </a>
+</nav>
