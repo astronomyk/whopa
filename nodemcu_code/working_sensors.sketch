@@ -1,0 +1,99 @@
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h>
+#include <Adafruit_MPU6050.h>
+#include <DHT.h>
+
+// === Pin Definitions ===
+#define DHTPIN D3
+#define DHTTYPE DHT22
+#define MOTOR_IN1 D7
+#define MOTOR_IN2 D8
+
+// === Sensor Instances ===
+Adafruit_BMP280 bmp;
+Adafruit_MPU6050 mpu;
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  delay(1000); // Give USB time
+
+  // I2C for BMP280 + MPU6050
+  Wire.begin(D2, D1);
+
+  // Motor pins
+  pinMode(MOTOR_IN1, OUTPUT);
+  pinMode(MOTOR_IN2, OUTPUT);
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);
+
+  // Init sensors
+  if (!bmp.begin()) {
+    Serial.println("BMP,NaN,NaN");
+  }
+
+  if (!mpu.begin()) {
+    Serial.println("GYRO,NaN,NaN,NaN");
+  }
+
+  dht.begin();
+
+  Serial.println("READY");
+}
+
+void loop() {
+  if (Serial.available()) {
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+
+    if (command == "read_bmp") {
+      float temp = bmp.readTemperature();
+      float pressure = bmp.readPressure() / 100.0F;
+      Serial.print("BMP,");
+      Serial.print(temp);
+      Serial.print(",");
+      Serial.println(pressure);
+
+    } else if (command == "read_gyro") {
+      sensors_event_t a, g, temp;
+      mpu.getEvent(&a, &g, &temp);
+      Serial.print("GYRO,");
+      Serial.print(a.acceleration.x);
+      Serial.print(",");
+      Serial.print(a.acceleration.y);
+      Serial.print(",");
+      Serial.println(a.acceleration.z);
+
+    } else if (command == "read_dht") {
+      float temp = dht.readTemperature();
+      float humid = dht.readHumidity();
+      if (isnan(temp) || isnan(humid)) {
+        Serial.println("DHT,NaN,NaN");
+      } else {
+        Serial.print("DHT,");
+        Serial.print(temp);
+        Serial.print(",");
+        Serial.println(humid);
+      }
+
+    } else if (command == "motor_fwd") {
+      digitalWrite(MOTOR_IN1, HIGH);
+      digitalWrite(MOTOR_IN2, LOW);
+      Serial.println("MOTOR,FWD");
+
+    } else if (command == "motor_rev") {
+      digitalWrite(MOTOR_IN1, LOW);
+      digitalWrite(MOTOR_IN2, HIGH);
+      Serial.println("MOTOR,REV");
+
+    } else if (command == "motor_stop") {
+      digitalWrite(MOTOR_IN1, LOW);
+      digitalWrite(MOTOR_IN2, LOW);
+      Serial.println("MOTOR,STOP");
+
+    } else {
+      Serial.println("ERR,UnknownCommand");
+    }
+  }
+}
