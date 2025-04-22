@@ -1,5 +1,5 @@
 from astropy.time import Time
-from astropy.coordinates import EarthLocation, AltAz, get_sun, get_moon, SkyCoord
+from astropy.coordinates import EarthLocation, AltAz, get_body, SkyCoord
 from astropy.coordinates import solar_system_ephemeris
 from astropy import units as u
 from astroplan import Observer, FixedTarget
@@ -21,8 +21,8 @@ def get_sun_moon_altitudes():
     # === 2. Altitudes ===
     altaz_frame = AltAz(obstime=observing_time, location=location)
     with solar_system_ephemeris.set('builtin'):
-        sun = get_sun(observing_time)
-        moon = get_moon(observing_time)
+        sun = get_body("sun", observing_time)
+        moon = get_body("moon", observing_time)
 
         sun_alt = sun.transform_to(altaz_frame).alt
         moon_alt = moon.transform_to(altaz_frame).alt
