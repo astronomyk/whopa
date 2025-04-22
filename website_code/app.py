@@ -42,9 +42,9 @@ def observatory():
 @app.route("/telescope")
 def telescope_page():
     # Option 1: embed
-    # return render_template("telescope.html")
+    return render_template("telescope.html")
     # Option 2: redirect to port 5432
-    return redirect("http://localhost:5432")
+    # return redirect("http://localhost:5432")
 
 
 @app.route("/wind-map.png")
