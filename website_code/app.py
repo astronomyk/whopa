@@ -96,7 +96,7 @@ def visibility_page():
 
 # Run from the top whopa directory:
 #   $ python website_code/app.py
-#   * Running on http://127.0.0.1:5000/
+#   * Running on http://0.0.0.0:5000/
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
