@@ -67,6 +67,17 @@
 
     <hr>
 
+    <img src="{{ url_for('wind_map') }}"
+         alt="Wind Map"
+         style="width: 800px; max-width: 100%; margin-top: 10px;">
+
+    <form method="POST" action="/refresh" style="margin-top: 20px;">
+        <button type="submit">🔄 Refresh Wind Map</button>
+    </form>
+    <p>Auto-refreshes every 10 minutes</p>
+
+    <hr>
+
     <div style="margin-top: 20px; font-size: 1.1em;">
         <h3>Sky (RA) Reference Points </h3>
         <p> ⬅️ RA (East): {{ celestial.east_ra }}°
@@ -127,24 +138,20 @@
         </div>
     </div>
 
-    <hr>
+    <div style="margin-top: 30px;">
+        <h3>🔭 Seasonal Visibility Planner</h3>
+        <form method="post" action="/visibility" style="margin-bottom: 10px;">
+            <label for="object_name">Enter Object Name:</label>
+            <input type="text" id="object_name" name="object_name" placeholder="e.g. M42, Sgr A*" required>
+            <button type="submit">Show Visibility</button>
+        </form>
 
-    <img src="{{ url_for('wind_map') }}"
-         alt="Wind Map"
-         style="width: 800px; max-width: 100%; margin-top: 10px;">
-
-    <form method="POST" action="/refresh" style="margin-top: 20px;">
-        <button type="submit">🔄 Refresh Wind Map</button>
-    </form>
-    <p>Auto-refreshes every 10 minutes</p>
-
-    <hr>
-    <h3>Observatory Roof Controls</h3>
-
-    <form method="POST">
-        <button type="submit" name="open_roof" style="padding: 10px 20px; font-size: 16px;">Open Roof</button>
-        <button type="submit" name="close_roof" style="padding: 10px 20px; font-size: 16px;">Close Roof</button>
-    </form>
+        {% if plot_img %}
+        <div>
+            <img src="data:image/png;base64,{{ plot_img }}" alt="Visibility Plot" style="width: 800px; max-width: 100%; margin-top: 10px;">
+        </div>
+        {% endif %}
+    </div>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}

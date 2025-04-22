@@ -1,0 +1,42 @@
+{% include "_navbar.html" %}
+
+<h2 style="text-align: center;">🛠️ Observatory Controls</h2>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 30px; margin-top: 20px;">
+
+  <!-- Roof Control Buttons -->
+  <form method="post" style="display: flex; gap: 15px;">
+    <button name="open_roof" type="submit" style="padding: 15px 25px; font-size: 1.2em;">🚪 Open Roof</button>
+    <button name="stop_roof" type="submit" style="padding: 15px 25px; font-size: 1.2em; background-color: darkred; color: white;">🛑 Stop</button>
+    <button name="close_roof" type="submit" style="padding: 15px 25px; font-size: 1.2em;">🔒 Close Roof</button>
+  </form>
+
+  <!-- Light Control Buttons -->
+  <form method="post" style="display: flex; gap: 15px;">
+    <button name="light_on" type="submit" style="padding: 15px 25px; font-size: 1.2em;">💡 Light On</button>
+    <button name="light_off" type="submit" style="padding: 15px 25px; font-size: 1.2em;">🌑 Light Off</button>
+  </form>
+
+</div>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div style="text-align: center; margin-top: 20px;">
+      <ul>
+        {% for msg in messages %}
+          <li>{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<hr>
+
+<h2 style="text-align: center;">📷 Live Observatory Webcam</h2>
+
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+  <img src="http://localhost:8081" alt="Webcam Stream"
+       style="width: 800px; max-width: 100%; border: 2px solid #444; border-radius: 8px;">
+</div>

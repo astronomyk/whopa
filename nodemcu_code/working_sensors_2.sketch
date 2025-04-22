@@ -1,88 +1,114 @@
 #include <Wire.h>
-#include <Adafruit_BMP280.h>
-#include <Adafruit_Sensor.h>
 #include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h>
 #include <DHT.h>
 
 #define DHTPIN D3
 #define DHTTYPE DHT22
 
-// I2C
-#define SDA_PIN D1
-#define SCL_PIN D2
+#define MOTOR_IN1 D5  // GPIO14
+#define MOTOR_IN2 D6  // GPIO12
 
-// Digital Inputs
-#define BALL_SWITCH D0
-#define BUMP1 D7
-#define BUMP2 D8
+#define BUMP_PIN D7   // Shared bump switches
+#define BALL_PIN D0   // Ball switch
 
-// Motor control
-#define MOTOR_IN1 D5
-#define MOTOR_IN2 D6
-
-DHT dht(DHTPIN, DHTTYPE);
-Adafruit_BMP280 bmp;
 Adafruit_MPU6050 mpu;
+Adafruit_BMP280 bmp;
+DHT dht(DHTPIN, DHTTYPE);
+
+unsigned long motorStartTime = 0;
+bool motorRunning = false;
 
 void setup() {
   Serial.begin(9600);
-  delay(1000);
-
-  Wire.begin(SDA_PIN, SCL_PIN);
-  dht.begin();
-  bmp.begin(0x76);
-  mpu.begin();
-
-  pinMode(BALL_SWITCH, INPUT_PULLUP);
-  pinMode(BUMP1, INPUT_PULLUP);
-  pinMode(BUMP2, INPUT_PULLUP);
 
   pinMode(MOTOR_IN1, OUTPUT);
   pinMode(MOTOR_IN2, OUTPUT);
+  stopMotor();
 
-  digitalWrite(MOTOR_IN1, LOW);
-  digitalWrite(MOTOR_IN2, LOW);
+  pinMode(BUMP_PIN, INPUT_PULLUP);
+  pinMode(BALL_PIN, INPUT_PULLUP);
+  dht.begin();
 
-  Serial.println("System ready.");
+  Wire.begin(D1, D2);  // SDA, SCL
+
+  if (!mpu.begin()) {
+    Serial.println("MPU6050 not found");
+  }
+
+  if (!bmp.begin(0x76)) {
+    Serial.println("BMP280 not found at 0x76");
+  }
 }
 
 void loop() {
+  // 🔁 Check serial input
   if (Serial.available()) {
     char cmd = Serial.read();
-
-    if (cmd == 'F') {
-      digitalWrite(MOTOR_IN1, HIGH);
-      digitalWrite(MOTOR_IN2, LOW);
-    } else if (cmd == 'B') {
-      digitalWrite(MOTOR_IN1, LOW);
-      digitalWrite(MOTOR_IN2, HIGH);
-    } else if (cmd == 'S') {
-      digitalWrite(MOTOR_IN1, LOW);
-      digitalWrite(MOTOR_IN2, LOW);
-    }
+    handleMotorCommand(cmd);
   }
 
+  // 🕒 Timeout check
+  if (motorRunning && (millis() - motorStartTime > 60000)) {
+    stopMotor();
+  }
+
+  // 🌡️ Sensor readings
   float temp = dht.readTemperature();
-  float hum = dht.readHumidity();
+  float humid = dht.readHumidity();
   float pressure = bmp.readPressure() / 100.0;
+  float alt = bmp.readAltitude(1013.25);
 
-  sensors_event_t a, g, temp_mpu;
-  mpu.getEvent(&a, &g, &temp_mpu);
+  sensors_event_t a, g, tempEvent;
+  mpu.getEvent(&a, &g, &tempEvent);
 
-  int ball = digitalRead(BALL_SWITCH);
-  int bump1 = digitalRead(BUMP1);
-  int bump2 = digitalRead(BUMP2);
+  int in1_state = digitalRead(MOTOR_IN1);
+  int in2_state = digitalRead(MOTOR_IN2);
+  bool bump_state = !digitalRead(BUMP_PIN);
+  bool ball_state = !digitalRead(BALL_PIN);
 
-  // Output CSV format: TEMP,HUM,PRESSURE,AX,AY,AZ,BALL,BUMP1,BUMP2
+  // 📤 CSV-style output
   Serial.print(temp); Serial.print(",");
-  Serial.print(hum); Serial.print(",");
+  Serial.print(humid); Serial.print(",");
   Serial.print(pressure); Serial.print(",");
+  Serial.print(alt); Serial.print(",");
   Serial.print(a.acceleration.x); Serial.print(",");
   Serial.print(a.acceleration.y); Serial.print(",");
   Serial.print(a.acceleration.z); Serial.print(",");
-  Serial.print(ball); Serial.print(",");
-  Serial.print(bump1); Serial.print(",");
-  Serial.println(bump2);
+  Serial.print(g.gyro.x); Serial.print(",");
+  Serial.print(g.gyro.y); Serial.print(",");
+  Serial.print(g.gyro.z); Serial.print(",");
+  Serial.print(bump_state); Serial.print(",");
+  Serial.print(ball_state); Serial.print(",");
+  Serial.print(in1_state); Serial.print(",");
+  Serial.println(in2_state);
 
   delay(1000);
+}
+
+void handleMotorCommand(char cmd) {
+  switch (cmd) {
+    case 'F':  // Forward / Open
+      digitalWrite(MOTOR_IN1, HIGH);
+      digitalWrite(MOTOR_IN2, LOW);
+      motorStartTime = millis();
+      motorRunning = true;
+      break;
+    case 'B':  // Backward / Close
+      digitalWrite(MOTOR_IN1, LOW);
+      digitalWrite(MOTOR_IN2, HIGH);
+      motorStartTime = millis();
+      motorRunning = true;
+      break;
+    case 'S':  // Stop
+      stopMotor();
+      break;
+  }
+}
+
+void stopMotor() {
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);
+  motorRunning = false;
 }
