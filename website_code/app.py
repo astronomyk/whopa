@@ -2,7 +2,7 @@ import io
 import matplotlib.pyplot as plt
 from flask import Flask, request, render_template, redirect, url_for, flash, send_file
 
-from trycoo_code.talk_to_node import send_command
+from website_code.talk_to_node import send_command
 from website_code.plot_wind_from_bom import plot_vic_wind_data_with_quivers
 from website_code.plot_object_visibility import plot_altitude_for_seasons  # your updated plotting function
 from website_code.astro_utils import get_sun_moon_altitudes
@@ -37,7 +37,6 @@ def observatory():
             result = send_command("light_off")
             flash(f"🌑 Light Off → {result}")
     return render_template("observatory.html")
-
 
 
 @app.route("/telescope")
