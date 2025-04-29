@@ -1,0 +1,36 @@
+{% macro observatory_roof(state="closed", light_on=False) %}
+<svg width="260" height="260">
+  <!-- Triangle (roof) -->
+  {% if state == "open" %}
+    <polygon
+      points="60,130 200,130 130,100"
+      fill="green"
+      stroke="black"
+      stroke-width="2"
+      transform="rotate(-90 100 40) translate(-120, -130)"
+    />
+  {% elif state == "half" %}
+    <polygon
+      points="60,130 200,130 130,100"
+      fill="red"
+      stroke="black"
+      stroke-width="2"
+      transform="rotate(-45, 100, 30) translate(-80, -50)"
+    />
+  {% else %}
+    <polygon
+      points="60,130 200,130 130,100"
+      fill="green"
+      stroke="black"
+      stroke-width="2"
+    />
+  {% endif %}
+
+  <!-- Square (observatory) -->
+  <rect
+    x="70" y="140" width="120" height="120"
+    fill="{{ 'gold' if light_on else '#333' }}"
+    stroke="black" stroke-width="2"
+  />
+</svg>
+{% endmacro %}

@@ -1,4 +1,5 @@
 import io
+import base64
 import matplotlib.pyplot as plt
 from flask import Flask, request, render_template, redirect, url_for, flash, send_file
 
@@ -6,8 +7,11 @@ from talk_to_node import send_command
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
 from plot_object_visibility import plot_altitude_for_seasons  # your updated plotting function
 from astro_utils import get_sun_moon_altitudes
+from yaml_loader import load_gpios_yaml, get_mock_sensor_data, get_mock_gpio_states, get_roof_state  # (we simulate this)
 
-import base64
+
+# Load GPIO setup
+gpios_config = load_gpios_yaml()
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Needed for flashing messages
@@ -19,24 +23,35 @@ def dashboard():
 
 
 @app.route("/observatory", methods=["GET", "POST"])
-def observatory():
+def observatory_page():
+
+    sensor_data = get_mock_sensor_data()
+    gpio_states = get_mock_gpio_states()
+    roof_state = get_roof_state(sensor_data, gpio_states)
+
+    def round_floats(obj):
+        if isinstance(obj, dict):
+            return {k: round_floats(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [round_floats(item) for item in obj]
+        elif isinstance(obj, float):
+            return round(obj, 2)
+        else:
+            return obj
+
+    sensor_data = round_floats(sensor_data)
+
     if request.method == "POST":
-        if "open_roof" in request.form:
-            result = send_command("motor_fwd")
-            flash(f"🚪 Roof Opening → {result}")
-        elif "close_roof" in request.form:
-            result = send_command("motor_rev")
-            flash(f"🔒 Roof Closing → {result}")
-        elif "stop_roof" in request.form:
-            result = send_command("motor_stop")
-            flash(f"🛑 Roof Stopped → {result}")
-        elif "light_on" in request.form:
-            result = send_command("light_on")
-            flash(f"💡 Light On → {result}")
-        elif "light_off" in request.form:
-            result = send_command("light_off")
-            flash(f"🌑 Light Off → {result}")
-    return render_template("observatory.html")
+        action = request.form.get("action")
+        flash(f"Command sent: {action}")
+        # Here you'd normally send a serial command
+        # e.g., serial_write(action)
+
+    return render_template("observatory.html",
+                           gpios=gpios_config,
+                           sensors=sensor_data,
+                           gpio_states=gpio_states,
+                           roof_state=roof_state)
 
 
 @app.route("/telescope")
