@@ -46,11 +46,12 @@ def observatory_page():
     sensor_data = round_floats(sensor_data)
 
     if request.method == "POST":
-        action = request.form.get(
-            "action")  # e.g., "Actuator_extend", "Lights_off"
+        # e.g., "Actuator_extend", "Lights_off"
+        action = request.form.get("action")
         if action:
             try:
                 device, act = action.split("_", 1)
+                print(device, act, action)
                 set_switch_device_action(device, act)
                 flash(f"✅ Command sent: {device} → {act}")
             except Exception as e:
