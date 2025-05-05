@@ -40,8 +40,10 @@ def set_switch_device_action(device, action, port="/dev/ttyACM1"):
     ]
 
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        print(result.stdout.strip())
+        # result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        # print(result.stdout.strip())
+        subprocess.Popen(cmd, stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError as e:
         print("❌ Error running command:")
         print(e.stderr or e.output)
