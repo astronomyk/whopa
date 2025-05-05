@@ -51,8 +51,15 @@
               </div>
 
               <!-- Status card beside the buttons -->
+              {% set any_on = false %}
+              {% for pin in gpio_map.keys() %}
+                {% if gpio_states[pin] %}
+                  {% set any_on = true %}
+                {% endif %}
+              {% endfor %}
+
               <div style="
-                background-color: #f9f9f9;
+                background-color: {{ '#d8f7d4' if any_on else '#f9f9f9' }};
                 border: 2px solid #ccc;
                 border-radius: 10px;
                 padding: 15px 15px;
