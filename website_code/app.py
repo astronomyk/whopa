@@ -46,11 +46,10 @@ def observatory_page():
     sensor_data = round_floats(sensor_data)
 
     gyro_data = sensor_data.get("GY-521", {})
-    x = float(gyro_data.get("d2x", 0))
-    y = float(gyro_data.get("d2y", 0))
-    z = float(gyro_data.get("d2z", 1))
-
-    tilt_angle = round(compute_tilt_angle(x, y, z), 1)
+    x = float(gyro_data.get("Accel_x", 0))
+    y = float(gyro_data.get("Accel_y", 0))
+    z = float(gyro_data.get("Accel_z", 1))
+    tilt_angle = round(compute_tilt_angle(x, y, z))
 
     if request.method == "POST":
         # e.g., "Actuator_extend", "Lights_off"
