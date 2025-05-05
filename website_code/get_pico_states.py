@@ -1,7 +1,12 @@
 import platform
 from utils_picos import get_sensor_values, get_switch_gpio_status
-import math
+import yaml
 import psutil
+
+
+def load_gpios_yaml(filepath="gpios.yaml"):
+    with open(filepath, 'r') as file:
+        return yaml.safe_load(file)
 
 
 def get_sensor_data():

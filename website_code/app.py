@@ -7,7 +7,8 @@ from flask import Flask, request, render_template, redirect, url_for, flash, sen
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
 from plot_object_visibility import plot_altitude_for_seasons  # your updated plotting function
 from astro_utils import get_sun_moon_altitudes
-from yaml_loader import load_gpios_yaml, get_mock_sensor_data, get_mock_gpio_states, get_roof_state, get_linux_temperatures  # (we simulate this)
+# from get_pico_states_mock import load_gpios_yaml, get_mock_sensor_data, get_mock_gpio_states, get_roof_state, get_linux_temperatures  # (we simulate this)
+from get_pico_states import load_gpios_yaml, get_sensor_data, get_gpio_states, get_roof_state, get_linux_temperatures
 
 
 # Load GPIO setup
@@ -27,10 +28,16 @@ def dashboard():
 @app.route("/observatory", methods=["GET", "POST"])
 def observatory_page():
 
-    sensor_data = get_mock_sensor_data()
-    gpio_states = get_mock_gpio_states()
+    # sensor_data = get_mock_sensor_data()
+    # gpio_states = get_mock_gpio_states()
+    # roof_state = get_roof_state(sensor_data, gpio_states)
+    # linux_temperatures = get_linux_temperatures()
+
+    sensor_data = get_sensor_data()
+    gpio_states = get_gpio_states()
     roof_state = get_roof_state(sensor_data, gpio_states)
     linux_temperatures = get_linux_temperatures()
+
 
     def round_floats(obj):
         if isinstance(obj, dict):
