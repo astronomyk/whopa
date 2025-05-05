@@ -67,14 +67,44 @@
 
     <hr>
 
+<div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+
+  <!-- Wind map -->
+  <div>
     <img src="{{ url_for('wind_map') }}"
          alt="Wind Map"
-         style="width: 800px; max-width: 100%; margin-top: 10px;">
+         style="width: 420px; max-width: 100%;">
+<!--    <form method="POST" action="/refresh" style="margin-top: 10px;">-->
+<!--        <button type="submit">🔄 Refresh Wind Map</button>-->
+<!--    </form>-->
+    <p style="font-size: 0.9em;">Wind map refreshes every 10 minutes</p>
+  </div>
 
-    <form method="POST" action="/refresh" style="margin-top: 20px;">
-        <button type="submit">🔄 Refresh Wind Map</button>
-    </form>
-    <p>Auto-refreshes every 10 minutes</p>
+  <!-- BoM radar -->
+    <!-- BoM radar with red dot overlay -->
+    <div style="position: relative; display: inline-block;">
+      <img src="http://www.bom.gov.au/radar/IDR023.gif?{{ radar_timestamp }}"
+           alt="BoM Radar"
+           style="width: 380px; max-width: 100%;">
+
+      <!-- Red dot (telescope location) -->
+      <div style="
+          position: absolute;
+          left: 140px;
+          top: 100px;
+          width: 12px;
+          height: 12px;
+          background-color: red;
+          border-radius: 50%;
+          border: 2px solid white;
+          transform: translate(-50%, -50%);
+      "></div>
+
+      <p style="font-size: 0.9em; text-align: center;">Live Radar (BoM)</p>
+    </div>
+
+</div>
+
 
     <hr>
 

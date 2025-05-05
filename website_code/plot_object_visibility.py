@@ -1,13 +1,12 @@
+from datetime import datetime
+
 import matplotlib.pyplot as plt
-from astropy.time import Time
-from astropy.coordinates import SkyCoord, AltAz, EarthLocation
-from astroquery.simbad import Simbad
-import astropy.units as u
 import numpy as np
 
 from astroquery.simbad import Simbad
-from astropy.coordinates import SkyCoord
-import astropy.units as u
+from astropy.coordinates import SkyCoord, EarthLocation, AltAz
+from astropy.time import Time
+from astropy import units as u
 
 
 def get_object_coords(name):
@@ -91,5 +90,78 @@ def plot_altitude_for_seasons(
         plt.show()
 
 
-# Example usage:
-# plot_altitude_for_seasons("ABCdef")
+from pyongc import data
+NGC_CAT = data.all()
+
+
+def find_ngc_near_zenith(latitude=-37.303071, longitude=144.41625, elevation=550, radius_deg=30):
+    location = EarthLocation(lat=latitude*u.deg, lon=longitude*u.deg, height=elevation*u.m)
+    now = Time(datetime.utcnow())
+    altaz_frame = AltAz(obstime=now, location=location)
+    zenith = SkyCoord(alt=90*u.deg, az=0*u.deg, frame=altaz_frame).transform_to('icrs')
+
+    catalog = NGC_CAT.dropna(subset=['ra', 'dec', 'majax', 'minax'])
+
+    coords = SkyCoord(ra=catalog['ra'].values*u.rad, dec=catalog['dec'].values*u.rad)
+    separations = zenith.separation(coords)
+    mask = separations < radius_deg * u.deg
+    near_zenith = catalog[mask].copy()
+
+    # Transform to AltAz for azimuth
+    altaz = coords[mask].transform_to(altaz_frame)
+    near_zenith['separation_deg'] = separations[mask].deg
+    near_zenith['azimuth_deg'] = altaz.az.deg
+    near_zenith['sky_area'] = near_zenith['majax'] * near_zenith['minax']
+
+    return near_zenith[['name', 'type', 'ra', 'dec', 'vmag',
+                        'majax', 'minax', 'sky_area',
+                        'separation_deg', 'azimuth_deg']]
+
+
+def plot_ngc_polar(catalog_df, label_top_n=5):
+    if catalog_df.empty:
+        print("No objects to plot.")
+        return
+
+    # Convert angles to polar coordinates
+    r = catalog_df['separation_deg'].values
+    theta = np.radians(catalog_df['azimuth_deg'].values)
+
+    # Color by magnitude
+    mag = catalog_df['vmag'].fillna(catalog_df['vmag'].max() + 2)
+    colors = plt.cm.plasma((mag - mag.min()) / (mag.max() - mag.min()))
+
+    # Size by log of sky area (avoid log(0) by adding a small value)
+    sky_area = catalog_df['sky_area'].values
+    safe_area = np.clip(sky_area, a_min=1e-2, a_max=None)  # Avoid zeros
+    size = 20 + 30 * np.log10(safe_area)  # Adjust scale and offset as needed
+
+    # Plotting
+    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}, figsize=(8, 8))
+    sc = ax.scatter(theta, r, c=colors, s=size, edgecolors='black', linewidths=0.5)
+
+    ax.set_theta_zero_location('N')
+    ax.set_theta_direction(-1)
+    ax.set_ylim(0, max(r) * 1.05)
+    ax.set_title("NGC/IC Objects Near Zenith", fontsize=14)
+
+    # Label N brightest objects
+    if label_top_n > 0:
+        top_objects = catalog_df.nlargest(label_top_n, 'sky_area')
+        for _, row in top_objects.iterrows():
+            r_ = row['separation_deg']
+            theta_ = np.radians(row['azimuth_deg'])
+            ax.text(theta_, r_ + 1, row['name'], ha='center', va='bottom', fontsize=8)
+
+    # Colorbar
+    norm = plt.Normalize(vmin=mag.min(), vmax=mag.max())
+    cbar = plt.colorbar(plt.cm.ScalarMappable(cmap='plasma_r', norm=norm), ax=ax, orientation='vertical')
+    cbar.set_label('Magnitude (brighter = bluer)', rotation=270, labelpad=15)
+
+    plt.show()
+
+
+
+# results = find_ngc_near_zenith(-37.303071, 144.41625, radius_deg=30)
+# plot_ngc_polar(results, label_top_n=30)
+

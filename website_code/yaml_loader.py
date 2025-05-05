@@ -1,5 +1,6 @@
 import random
 import yaml
+import platform
 
 
 def load_gpios_yaml(filepath="gpios.yaml"):
@@ -42,8 +43,35 @@ def get_roof_state(sensor_data, gpio_states):
     actuator_moving = actuator_extend_on or actuator_retract_on
 
     if actuator_moving:
-        return "half"
+        return "moving"
     elif not ball_switch_triggered:
         return "open"
     else:
         return "closed"
+
+
+def get_linux_temperatures():
+    result = {}
+
+    if platform.system() != "Linux":
+        return result  # Temperatures only supported on Linux via psutil
+
+    import psutil
+
+    temps = psutil.sensors_temperatures()
+    if not temps:
+        return result
+
+    for chip_name, entries in temps.items():
+        chip_readings = []
+        for entry in entries:
+            label = entry.label or chip_name
+            chip_readings.append({
+                "label": label,
+                "current": round(entry.current, 1),
+                "high": round(entry.high, 1) if entry.high else None,
+                "critical": round(entry.critical, 1) if entry.critical else None,
+            })
+        result[chip_name] = chip_readings
+
+    return result

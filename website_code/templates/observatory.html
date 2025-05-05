@@ -84,8 +84,8 @@
   <div style="flex-shrink: 0;">
     {{ observatory_roof(state=roof_state, light_on=gpio_states[26]) }}
     <p style="text-align: center; font-weight: bold; margin-top: 10px;">
-      Roof is currently: {{ roof_state|capitalize }} <br>
-      Dome Lights are currently: {{ gpio_states[26]|capitalize }}
+      Roof: {{ roof_state|capitalize }} <br>
+      Dome Lights: {{ gpio_states[26]|capitalize }}
     </p>
   </div>
 
@@ -126,6 +126,36 @@
   {% endfor %}
 
 </div>
+
+<hr>
+
+<h3 style="text-align: center; margin-top: 40px;">🌡️ Linux Box Internal Temperatures</h3>
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
+  {% for chip, sensors in linux_temperatures.items() %}
+    <div style="
+      background-color: #f3f3f3;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 15px 20px;
+      min-width: 200px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    ">
+      <h4 style="margin-bottom: 10px;">{{ chip }}</h4>
+      <ul style="list-style: none; padding-left: 0; font-size: 0.95em;">
+        {% for sensor in sensors %}
+          <li style="margin-bottom: 4px;">
+            <strong>{{ sensor.label }}</strong>:
+            {{ sensor.current }} °C
+            {% if sensor.high %}(High: {{ sensor.high }}°){% endif %}
+            {% if sensor.critical %}(Critical: {{ sensor.critical }}°){% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</div>
+
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}

@@ -1,13 +1,13 @@
 import io
 import base64
+from datetime import datetime
 import matplotlib.pyplot as plt
 from flask import Flask, request, render_template, redirect, url_for, flash, send_file
 
-from talk_to_node import send_command
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
 from plot_object_visibility import plot_altitude_for_seasons  # your updated plotting function
 from astro_utils import get_sun_moon_altitudes
-from yaml_loader import load_gpios_yaml, get_mock_sensor_data, get_mock_gpio_states, get_roof_state  # (we simulate this)
+from yaml_loader import load_gpios_yaml, get_mock_sensor_data, get_mock_gpio_states, get_roof_state, get_linux_temperatures  # (we simulate this)
 
 
 # Load GPIO setup
@@ -19,7 +19,9 @@ app.secret_key = "supersecretkey"  # Needed for flashing messages
 @app.route("/", methods=["GET", "POST"])
 def dashboard():
     celestial = get_sun_moon_altitudes()
-    return render_template("dashboard.html", celestial=celestial)
+    return render_template("dashboard.html",
+                           celestial=celestial,
+                           radar_timestamp=int(datetime.utcnow().timestamp()))
 
 
 @app.route("/observatory", methods=["GET", "POST"])
@@ -28,6 +30,7 @@ def observatory_page():
     sensor_data = get_mock_sensor_data()
     gpio_states = get_mock_gpio_states()
     roof_state = get_roof_state(sensor_data, gpio_states)
+    linux_temperatures = get_linux_temperatures()
 
     def round_floats(obj):
         if isinstance(obj, dict):
@@ -51,7 +54,8 @@ def observatory_page():
                            gpios=gpios_config,
                            sensors=sensor_data,
                            gpio_states=gpio_states,
-                           roof_state=roof_state)
+                           roof_state=roof_state,
+                           linux_temperatures=linux_temperatures)
 
 
 @app.route("/telescope")

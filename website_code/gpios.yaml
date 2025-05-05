@@ -40,24 +40,23 @@
     - name: Actuator
       connection:
         gpio:
-          12: Extend
-          13: Retract
+          15: Extend
+          26: Retract
         io: out
         io_type: switch
-        params:
-          drive_time: 30
+        drive_time: 30
     - name: Lights
       connection:
         gpio:
-          26: Lights
+          27: Lights
         io: out
         io_type: switch
+        drive_time: 600
     - name: Fan
       connection:
         gpio:
-          27: Blow
-          28: Suck
+          28: Blow
+          29: Suck
         io: out
         io_type: switch
-        params:
-          drive_time: 300
+        drive_time: 300

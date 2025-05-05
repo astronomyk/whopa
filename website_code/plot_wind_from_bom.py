@@ -105,7 +105,7 @@ def plot_vic_wind_data_with_quivers(return_fig=False):
     center_lat = -37.3031
     center_lon = 144.4165
 
-    fig, ax = plt.subplots(figsize=(10, 7))
+    fig, ax = plt.subplots(figsize=(10, 10))
     ax.axis('equal')
     ax.set_title("Wind Speed & Direction - Victoria")
     ax.set_xlabel("Longitude")
