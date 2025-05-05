@@ -83,11 +83,11 @@
 
   <!-- RIGHT: Observatory SVG -->
   <div style="flex-shrink: 0;">
-    {{ observatory_roof(state=roof_state, light_on=gpio_states[26]) }}
+    {{ observatory_roof(state=roof_state, light_on=gpio_states[27]) }}
     <p style="text-align: center; font-weight: bold; margin-top: 10px;">
       Roof: {{ roof_state|capitalize }} <br>
       Tilt Angle: {{ tilt_angle }}°
-      Dome Lights: {{ gpio_states[26]|capitalize }}
+      Dome Lights: {{ gpio_states[27]|capitalize }}
     </p>
   </div>
 
