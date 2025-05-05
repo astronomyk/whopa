@@ -2,7 +2,7 @@ import subprocess
 import math
 
 
-def set_switch_device_action(device, action):
+def set_switch_device_action(device, action, port="/dev/ttyACM1"):
     device = device.capitalize()  # Normalize: fan → Fan, etc.
 
     # Normalize shorthand numeric actions
@@ -35,9 +35,8 @@ def set_switch_device_action(device, action):
     print(f"Sending command: {device} → {action}")
 
     cmd = [
-        "mpremote",
-        "exec",
-        f"device='{device}'; action='{action}'; exec(open('pico_switches_action.py').read())"
+        "mpremote", "connect", port,
+        "exec", f"device='{device}'; action='{action}'; exec(open('pico_switches_action.py').read())"
     ]
 
     try:
@@ -48,13 +47,12 @@ def set_switch_device_action(device, action):
         print(e.stderr or e.output)
 
 
-def get_switch_gpio_status():
+def get_switch_gpio_status(port="/dev/ttyACM1"):
     try:
         result = subprocess.run(
             [
-                "mpremote",
-                "exec",
-                "exec(open('pico_switches.py').read())"
+                "mpremote", "connect", port,
+                "exec", "exec(open('pico_switches.py').read())"
             ],
             capture_output=True,
             text=True,
