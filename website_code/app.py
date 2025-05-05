@@ -9,6 +9,7 @@ from plot_object_visibility import plot_altitude_for_seasons  # your updated plo
 from astro_utils import get_sun_moon_altitudes
 from get_mock_states import get_sensor_data, get_gpio_states # (we simulate this)
 from get_pico_states import get_sensor_data, get_gpio_states, get_roof_state, get_linux_temperatures, load_gpios_yaml
+from utils_picos import set_switch_device_action
 
 
 # Load GPIO setup
@@ -45,10 +46,17 @@ def observatory_page():
     sensor_data = round_floats(sensor_data)
 
     if request.method == "POST":
-        action = request.form.get("action")
-        flash(f"Command sent: {action}")
-        # Here you'd normally send a serial command
-        # e.g., serial_write(action)
+        action = request.form.get(
+            "action")  # e.g., "Actuator_extend", "Lights_off"
+        if action:
+            try:
+                device, act = action.split("_", 1)
+                set_switch_device_action(device, act)
+                flash(f"✅ Command sent: {device} → {act}")
+            except Exception as e:
+                flash(f"❌ Failed to send command: {e}")
+        else:
+            flash("⚠️ No action received.")
 
     return render_template("observatory.html",
                            gpios=gpios_config,
