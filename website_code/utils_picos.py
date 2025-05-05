@@ -88,12 +88,12 @@ def get_sensor_values(sensor_name=None, port="/dev/ttyACM0"):
         if sensor_name:
             cmd = [
                 "mpremote", "connect", port,
-                "exec", f"sensor='{sensor_name}'; exec(open('pico_sensors.py').read())"
+                "exec", f"sensor='{sensor_name}'; exec(open('pico_sensors_status.py').read())"
             ]
         else:
             cmd = [
                 "mpremote", "connect", port,
-                "exec", "exec(open('pico_sensors.py').read())"
+                "exec", "exec(open('pico_sensors_status.py').read())"
             ]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
