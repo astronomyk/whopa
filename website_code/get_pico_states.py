@@ -11,7 +11,8 @@ def load_gpios_yaml(filepath="gpios.yaml"):
 
 def get_sensor_data():
     raw = get_sensor_values()
-    print(raw)
+    print(f"Raw sensor data: {raw}")
+
     # Normalize and convert
     data = {
         "Ball Switch": "Closed" if raw.get("ball", "0") == "1" else "Open",
@@ -37,6 +38,8 @@ def get_gpio_states():
     Returns GPIO status as {pin: bool}
     """
     raw_states = get_switch_gpio_status()
+    print(f"Raw switch states: {raw_states}")
+
     return {pin: (val == 1) for pin, val in raw_states.items()}
 
 
