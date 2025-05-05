@@ -1,11 +1,21 @@
 {% include "_navbar.html" %}
 
-<!--<h2 style="text-align: center;">🔭 Seestar Telescope Control</h2>-->
-
-<!--<div style="display: flex; justify-content: center; margin-top: 20px;">-->
-<!--  <iframe src="http://whopa.ts.net:5432"-->
-<!--          style="width: 100%; max-width: 1200px; height: 800px; border: 2px solid #444; border-radius: 8px;">-->
-<!--  </iframe>-->
-<!--</div>-->
-
-<a href="http://localhost:5432" target="_blank">Open Seestar Telescope UI at port [whopa-ip-address]:5432</a>
+<div style="display: flex; justify-content: center; align-items: center; height: 300px;">
+  <a href="http://{{ request.host.split(':')[0] }}:5432" target="_blank"
+     style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background-color: red;
+        color: white;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-decoration: none;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+     ">
+    🚀 Launch Seestar Alp UI
+  </a>
+</div>
