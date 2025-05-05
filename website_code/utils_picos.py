@@ -17,7 +17,7 @@ def set_switch_device_action(device, action, port="/dev/ttyACM1"):
             "+1": "extend",
             "1": "extend",
             "-1": "retract",
-            "0": "off"
+            "0": "off",
         },
         "Fan": {
             "+1": "blow",

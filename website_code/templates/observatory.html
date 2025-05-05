@@ -32,7 +32,8 @@
                   <form method="POST" style="display: flex; gap: 15px; justify-content: center;">
                     <button name="action" value="{{ device.name }}_{{ labels[0]|lower }}" type="submit"
                             style="padding: 15px 25px; font-size: 1.2em;">{{ labels[0] }}</button>
-                    <button name="action" value="{{ device.name }}_stop" type="submit"
+                    <!-- Careful here - there is a mismatch between the "Stop" button command and sending the command "off" to the picos -->
+                    <button name="action" value="{{ device.name }}_off" type="submit"
                             style="padding: 15px 25px; font-size: 1.2em; background-color: darkred; color: white;">🛑 Stop</button>
                     <button name="action" value="{{ device.name }}_{{ labels[1]|lower }}" type="submit"
                             style="padding: 15px 25px; font-size: 1.2em;">{{ labels[1] }}</button>
