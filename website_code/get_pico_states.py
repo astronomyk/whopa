@@ -55,7 +55,7 @@ def get_roof_state(sensor_data, gpio_states):
 
     if actuator_moving:
         return "moving"
-    elif not ball_switch_triggered:
+    elif ball_switch_triggered:
         return "open"
     else:
         return "closed"
