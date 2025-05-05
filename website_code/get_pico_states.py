@@ -14,19 +14,18 @@ def get_sensor_data():
     print(raw)
     # Normalize and convert
     data = {
-        "Ball Switch": "Closed" if raw.get("Ball", "0") == "1" else "Open",
-        "Bump Switch 1": "Closed" if raw.get("Bump1", "0") == "1" else "Open",
-        "Bump Switch 2": "Closed" if raw.get("Bump2", "0") == "1" else "Open",
+        "Ball Switch": "Closed" if raw.get("ball", "0") == "1" else "Open",
+        "Bump Switch 1": "Closed" if raw.get("bump1", "0") == "1" else "Open",
+        "Bump Switch 2": "Closed" if raw.get("bump2", "0") == "1" else "Open",
         "GY-521": {
-            "d2x": float(raw.get("d2x", 0)),
-            "d2y": float(raw.get("d2y", 0)),
-            "d2z": float(raw.get("d2z", 0)),
-            "Temp": float(raw.get("d2temp", 0))
+            "Accel_x": float(raw.get("accel_x", 0)),
+            "Accel_y": float(raw.get("accel_y", 0)),
+            "Accel_z": float(raw.get("accel_z", 0)),
         },
-        "Rain": float(raw.get("Rain", 0)),
+        "Rain": float(raw.get("rain", 0)),
         "DHT11": {
-            "Temp": float(raw.get("dht_temp", 0)),
-            "Humidity": float(raw.get("dht_hum", 0))
+            "Temp": float(raw.get("temp", 0)),
+            "Humidity": float(raw.get("hum", 0))
         }
     }
 
