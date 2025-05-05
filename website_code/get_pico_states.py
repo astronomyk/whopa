@@ -11,7 +11,7 @@ def load_gpios_yaml(filepath="gpios.yaml"):
 
 def get_sensor_data():
     raw = get_sensor_values()
-
+    print(raw)
     # Normalize and convert
     data = {
         "Ball Switch": "Closed" if raw.get("Ball", "0") == "1" else "Open",
