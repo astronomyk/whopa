@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 from flask import Flask, request, render_template, redirect, url_for, flash, send_file
 
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
-from plot_object_visibility import plot_altitude_for_seasons  # your updated plotting function
+from plot_object_visibility import plot_altitude_for_seasons
 from astro_utils import get_sun_moon_altitudes
-from get_mock_states import get_sensor_data, get_gpio_states # (we simulate this)
+# from get_mock_states import get_sensor_data, get_gpio_states # (we simulate this)
 from get_pico_states import get_sensor_data, get_gpio_states, get_roof_state, get_linux_temperatures, load_gpios_yaml
-from utils_picos import set_switch_device_action
+from utils_picos import set_switch_device_action, compute_tilt_angle
 
 
 # Load GPIO setup
@@ -45,6 +45,13 @@ def observatory_page():
 
     sensor_data = round_floats(sensor_data)
 
+    gyro_data = sensor_data.get("GY-521", {})
+    x = float(gyro_data.get("d2x", 0))
+    y = float(gyro_data.get("d2y", 0))
+    z = float(gyro_data.get("d2z", 1))
+
+    tilt_angle = round(compute_tilt_angle(x, y, z), 1)
+
     if request.method == "POST":
         # e.g., "Actuator_extend", "Lights_off"
         action = request.form.get("action")
@@ -64,6 +71,7 @@ def observatory_page():
                            sensors=sensor_data,
                            gpio_states=gpio_states,
                            roof_state=roof_state,
+                           tilt_angle=tilt_angle,
                            linux_temperatures=linux_temperatures)
 
 

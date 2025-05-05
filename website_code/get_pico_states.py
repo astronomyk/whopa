@@ -49,8 +49,8 @@ def get_roof_state(sensor_data, gpio_states):
     """
     ball_switch_triggered = sensor_data.get("Ball Switch", False)
 
-    actuator_extend_on = gpio_states.get(12, False)
-    actuator_retract_on = gpio_states.get(13, False)
+    actuator_extend_on = gpio_states.get(15, False)
+    actuator_retract_on = gpio_states.get(26, False)
     actuator_moving = actuator_extend_on or actuator_retract_on
 
     if actuator_moving:

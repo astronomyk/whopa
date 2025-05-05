@@ -86,6 +86,7 @@
     {{ observatory_roof(state=roof_state, light_on=gpio_states[26]) }}
     <p style="text-align: center; font-weight: bold; margin-top: 10px;">
       Roof: {{ roof_state|capitalize }} <br>
+      Tilt Angle: {{ tilt_angle }}°
       Dome Lights: {{ gpio_states[26]|capitalize }}
     </p>
   </div>
