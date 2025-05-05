@@ -8,7 +8,7 @@ def load_gpios_yaml(filepath="gpios.yaml"):
         return yaml.safe_load(file)
 
 
-def get_mock_sensor_data():
+def get_sensor_data():
     return {
         "Ball Switch": random.choice(["Open", "Closed"]),
         "Bump Switch 1": random.choice(["Open", "Closed"]),
@@ -22,7 +22,7 @@ def get_mock_sensor_data():
                   "Humidity": random.uniform(30, 70)},
     }
 
-def get_mock_gpio_states():
+def get_gpio_states():
     """
     Return a mock dictionary of GPIO states (True for ON, False for OFF).
     """
