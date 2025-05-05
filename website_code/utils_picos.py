@@ -52,7 +52,7 @@ def get_switch_gpio_status(port="/dev/ttyACM1"):
         result = subprocess.run(
             [
                 "mpremote", "connect", port,
-                "exec", "exec(open('pico_switches.py').read())"
+                "exec", "exec(open('pico_switches_status.py').read())"
             ],
             capture_output=True,
             text=True,
