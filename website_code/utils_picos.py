@@ -1,5 +1,6 @@
 import subprocess
 import math
+from datetime import datetime
 
 
 def set_switch_device_action(device, action, port="/dev/ttyACM1"):
@@ -42,8 +43,15 @@ def set_switch_device_action(device, action, port="/dev/ttyACM1"):
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         print(result.stdout.strip())
-        # subprocess.Popen(cmd, stdout=subprocess.DEVNULL,
-        #                  stderr=subprocess.DEVNULL)
+
+        def log_actuator_command(device, action):
+            if device.lower() != "actuator":
+                return
+            with open("/home/ingo/WHOPA/actuator_log.txt", "a") as f:
+                f.write(f"{datetime.now().isoformat()} {action}\n")
+
+        log_actuator_command(device, action)
+
     except subprocess.CalledProcessError as e:
         print("❌ Error running command:")
         print(e.stderr or e.output)
