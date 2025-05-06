@@ -31,7 +31,7 @@ def last_actuator_time():
 def stop_actuator():
     print("🛑 Timeout reached — sending OFF to actuator")
     subprocess.run([
-        "mpremote", "connect", "/dev/ttyACM1",
+        "/home/ingo/.pyenv/shims/mpremote", "connect", "/dev/ttyACM1",
         "exec", "device='Actuator'; action='off'; exec(open('pico_switches_action.py').read())"
     ])
     with open(LOG_PATH, "a") as f:
