@@ -11,7 +11,7 @@
 </style>
 
 <div style="display: flex; justify-content: center; align-items: center; height: 600px;">
-  <a href="http://{{ request.host.split(':')[0] }}:5432" target="_blank"
+  <a href="{{ url_for('launch_seestar') }}" target="_blank"
      style="
         display: flex;
         justify-content: center;
@@ -30,7 +30,7 @@
       Seestar Alp UI
   </a>
 
-  <a href="http://{{ request.host.split(':')[0] }}:8081/?action=stream" target="_blank"
+  <a href="{{ url_for('launch_webcam') }}" target="_blank"
      style="
         display: flex;
         justify-content: center;

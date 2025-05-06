@@ -4,21 +4,23 @@ import base64
 from datetime import datetime
 import matplotlib.pyplot as plt
 import zipfile
-from flask import Flask, request, render_template, redirect, url_for, flash, send_file, send_from_directory
-import subprocess
-from utils_seestar_data_access import sync_fits_files_to_local, crawl_seestar  # Adjust import paths
-
+from pathlib import Path
+from flask import Flask, request, render_template, url_for, flash, send_file, send_from_directory, redirect
 
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
 from plot_object_visibility import plot_altitude_for_seasons
-from astro_utils import get_sun_moon_altitudes
-# from get_mock_states import get_sensor_data, get_gpio_states # (we simulate this)
+
 from get_pico_states import get_sensor_data, get_gpio_states, get_roof_state, get_linux_temperatures, load_gpios_yaml
+
+from utils_astro import get_sun_moon_altitudes
 from utils_picos import set_switch_device_action, compute_tilt_angle
 from utils_archive_data_access import build_file_tree  # import the helper
+from utils_seestar_data_access import sync_fits_files_to_local, crawl_seestar  # Adjust import paths
+from utils_system import start_script_if_not_running
+
 
 ARCHIVE_PATH = "/media/ingo/archive"
-
+CTL_SCRIPTS_PATH = Path(__file__).parent.parent / "control_scripts/"
 
 # Load GPIO setup
 gpios_config = load_gpios_yaml()
@@ -185,6 +187,21 @@ def sync_fits():
         flash(f"❌ Sync failed: {e}")
 
     return redirect(url_for("files_page"))  # Or whatever the route is
+
+
+@app.route("/launch_seestar")
+def launch_seestar():
+    start_script_if_not_running("seestar_alp", CTL_SCRIPTS_PATH / "start_seestar_alp.sh")
+
+    host_ip = request.host.split(':')[0]
+    return redirect(f"http://{host_ip}:5432")
+
+@app.route("/launch_webcam")
+def launch_webcam():
+    start_script_if_not_running("mjpg_streamer", CTL_SCRIPTS_PATH / "start_webcam.sh")
+
+    host_ip = request.host.split(':')[0]
+    return redirect(f"http://{host_ip}:8081/?action=stream")
 
 
 # Run from the top whopa directory:
