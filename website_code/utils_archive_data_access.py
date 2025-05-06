@@ -14,6 +14,7 @@ def build_file_tree(root_dir):
                 })
             tree.append({
                 "name": foldername,
-                "files": files
+                "files": files,
+                "count": len(files)  # ← Add this line
             })
     return tree

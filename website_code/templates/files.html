@@ -28,7 +28,9 @@
 <ul>
   {% for folder in file_tree %}
     <li>
-      <span class="folder" onclick="toggle(this)">📁 {{ folder.name }}</span>
+      <span class="folder" onclick="toggle(this)">
+  📁    {{ folder.name }} <span style="color: gray;">({{ folder.count }})</span>
+      </span>
       <ul class="children" style="display: none;">
         {% for file in folder.files %}
           <li>
