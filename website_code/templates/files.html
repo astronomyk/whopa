@@ -36,6 +36,12 @@
     <button type="submit" style="padding: 5px 10px; font-size: 1em;">Download ZIP</button>
 </form>
 
+<form method="POST" action="{{ url_for('sync_fits') }}" style="margin-bottom: 20px;">
+    <button type="submit" style="padding: 10px 20px; font-size: 1em; background-color: #4CAF50; color: white; border: none; border-radius: 6px;">
+        🔄 Sync FITS Files from Telescope
+    </button>
+</form>
+
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul style="color: red;">
