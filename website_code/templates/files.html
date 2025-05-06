@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📁 Telescope Files</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 30px;
+        }
+        .folder {
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>📂 Telescope Files</h2>
+
+<ul>
+  {% for folder in file_tree %}
+    <li>
+      <span class="folder" onclick="toggle(this)">📁 {{ folder.name }}</span>
+      <ul class="children" style="display: none;">
+        {% for file in folder.files %}
+          <li>
+            📄 <a href="{{ url_for('download_file', filepath=file.path) }}" target="_blank">{{ file.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+
+<script>
+function toggle(element) {
+    const children = element.nextElementSibling;
+    if (children.style.display === "none") {
+        children.style.display = "block";
+    } else {
+        children.style.display = "none";
+    }
+}
+</script>
+
+</body>
+</html>

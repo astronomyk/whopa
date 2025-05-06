@@ -1,9 +1,8 @@
 import io
-import os
 import base64
 from datetime import datetime
 import matplotlib.pyplot as plt
-from flask import Flask, request, render_template, redirect, url_for, flash, send_file, send_from_directory, abort
+from flask import Flask, request, render_template, redirect, url_for, flash, send_file, send_from_directory
 
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
 from plot_object_visibility import plot_altitude_for_seasons
@@ -11,6 +10,7 @@ from astro_utils import get_sun_moon_altitudes
 # from get_mock_states import get_sensor_data, get_gpio_states # (we simulate this)
 from get_pico_states import get_sensor_data, get_gpio_states, get_roof_state, get_linux_temperatures, load_gpios_yaml
 from utils_picos import set_switch_device_action, compute_tilt_angle
+from utils_archive_data_access import build_file_tree  # import the helper
 
 ARCHIVE_PATH = "/media/ingo/archive"
 
@@ -132,27 +132,13 @@ def visibility_page():
 
 
 @app.route("/files")
-def list_files():
-    folder_tree = {}
+def files_page():
+    file_tree = build_file_tree(ARCHIVE_PATH)
+    return render_template("files.html", file_tree=file_tree)
 
-    for root, dirs, files in os.walk(ARCHIVE_PATH):
-        rel_root = os.path.relpath(root, ARCHIVE_PATH)
-        file_paths = sorted(files)
-        if file_paths:
-            folder_tree[rel_root] = file_paths
-
-    return render_template("file_tree.html", folder_tree=folder_tree)
-
-@app.route("/download/<path:filename>")
-def download_file(filename):
-    full_path = os.path.join(ARCHIVE_PATH, filename)
-
-    if not os.path.isfile(full_path):
-        abort(404)
-
-    dir_path = os.path.dirname(filename)
-    base_name = os.path.basename(filename)
-    return send_from_directory(os.path.join(ARCHIVE_PATH, dir_path), base_name, as_attachment=True)
+@app.route("/files/<path:filepath>")
+def download_file(filepath):
+    return send_from_directory(ARCHIVE_PATH, filepath, as_attachment=False)
 
 
 # Run from the top whopa directory:
