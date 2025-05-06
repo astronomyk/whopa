@@ -3,7 +3,7 @@
 from utils_seestar_data_access import crawl_seestar, get_targets_with_recent_fits, sync_fits_files_to_local
 
 ARCHIVE_PATH = "/media/ingo/archive"
-HOURS_LOOKBACK = 6  # Sync only files from the last 6 hours
+HOURS_LOOKBACK = 2  # Sync only files from the last 6 hours
 
 def main():
     print("🔍 Crawling Seestar share...")

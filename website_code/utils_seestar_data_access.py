@@ -44,7 +44,6 @@ def parse_ls_output(lines):
 def crawl_folder(path, verbose=False):
     try:
         output = run_smb_ls(path)
-        sleep(0.1)
         if verbose:
             print(f"\n📂 Contents of {path}:")
             print("\n".join(output))
