@@ -2,6 +2,7 @@ import io
 import base64
 from datetime import datetime
 import matplotlib.pyplot as plt
+import zipfile
 from flask import Flask, request, render_template, redirect, url_for, flash, send_file, send_from_directory
 
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
@@ -136,9 +137,37 @@ def files_page():
     file_tree = build_file_tree(ARCHIVE_PATH)
     return render_template("files.html", file_tree=file_tree)
 
+
 @app.route("/files/<path:filepath>")
 def download_file(filepath):
     return send_from_directory(ARCHIVE_PATH, filepath, as_attachment=False)
+
+
+@app.route("/download_folder", methods=["POST"])
+def download_folder():
+    folder = request.form.get("folder_name")
+    base_path = "/path/to/your/telescope/files"  # Update to your actual folder base
+
+    target_path = os.path.join(base_path, folder)
+
+    if not os.path.isdir(target_path):
+        flash(f"Folder '{folder}' not found.")
+        return redirect(url_for("files_page"))
+
+    # Create zip in memory
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for root, _, files in os.walk(target_path):
+            for file in files:
+                abs_path = os.path.join(root, file)
+                rel_path = os.path.relpath(abs_path, start=base_path)
+                zipf.write(abs_path, rel_path)
+
+    zip_buffer.seek(0)
+    zip_filename = f"{folder}.zip"
+    return send_file(zip_buffer, mimetype='application/zip',
+                     as_attachment=True, download_name=zip_filename)
+
 
 
 # Run from the top whopa directory:

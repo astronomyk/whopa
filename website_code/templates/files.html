@@ -25,6 +25,26 @@
 
 <h2>📂 Telescope Files</h2>
 
+<hr>
+
+<h3>📦 Download Folder as ZIP</h3>
+
+<form method="POST" action="{{ url_for('download_folder') }}">
+    <input type="text" name="folder_name" placeholder="Enter folder name (e.g., 2025-05-06)" required
+           style="padding: 5px; font-size: 1em;">
+    <button type="submit" style="padding: 5px 10px; font-size: 1em;">Download ZIP</button>
+</form>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul style="color: red;">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <ul>
   {% for folder in file_tree %}
     <li>
