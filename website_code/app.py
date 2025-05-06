@@ -147,7 +147,7 @@ def download_file(filepath):
 @app.route("/download_folder", methods=["POST"])
 def download_folder():
     folder = request.form.get("folder_name")
-    base_path = "/path/to/your/telescope/files"  # Update to your actual folder base
+    base_path = ARCHIVE_PATH  # Update to your actual folder base
 
     target_path = os.path.join(base_path, folder)
 
