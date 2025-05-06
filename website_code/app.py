@@ -5,6 +5,9 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import zipfile
 from flask import Flask, request, render_template, redirect, url_for, flash, send_file, send_from_directory
+import subprocess
+from utils_seestar_data_access import sync_fits_files_to_local, crawl_seestar  # Adjust import paths
+
 
 from plot_wind_from_bom import plot_vic_wind_data_with_quivers
 from plot_object_visibility import plot_altitude_for_seasons
@@ -169,6 +172,19 @@ def download_folder():
     return send_file(zip_buffer, mimetype='application/zip',
                      as_attachment=True, download_name=zip_filename)
 
+
+@app.route("/sync_fits", methods=["POST"])
+def sync_fits():
+    try:
+        crawl_data = crawl_seestar()  # You must define or import this
+        dest_root = ARCHIVE_PATH  # Replace with your actual path
+
+        sync_fits_files_to_local(crawl_data, dest_root)
+        flash("✅ FITS files synced successfully.")
+    except Exception as e:
+        flash(f"❌ Sync failed: {e}")
+
+    return redirect(url_for("files_page"))  # Or whatever the route is
 
 
 # Run from the top whopa directory:
