@@ -31,7 +31,7 @@
 <h3>📦 Download Folder as ZIP</h3>
 
 <form method="POST" action="{{ url_for('download_folder') }}">
-    <input type="text" name="folder_name" placeholder="Enter folder name (e.g., 2025-05-06)" required
+    <input type="text" name="folder_name" placeholder="Enter folder name" required
            style="padding: 5px; font-size: 1em;">
     <button type="submit" style="padding: 5px 10px; font-size: 1em;">Download ZIP</button>
 </form>
@@ -40,7 +40,7 @@
 A cron-job runs every 5 minutes to synchronise the files on the Seestar internal drive and on the Ubuntu local drive.
 <br>
 If you would like to trigger the synchronisation, click below:
-<br>
+<br><br>
 
 <form method="POST" action="{{ url_for('sync_fits') }}" style="margin-bottom: 20px;">
     <button type="submit" style="padding: 10px 20px; font-size: 1em; background-color: #4CAF50; color: white; border: none; border-radius: 6px;">
