@@ -4,6 +4,7 @@ from collections import defaultdict
 import subprocess
 from datetime import datetime, timedelta
 from tqdm import tqdm
+from time import sleep
 
 SMB_SHARE = "//seestar/EMMC Images"
 ROOT_FOLDER = "MyWorks"
@@ -43,6 +44,7 @@ def parse_ls_output(lines):
 def crawl_folder(path, verbose=False):
     try:
         output = run_smb_ls(path)
+        sleep(0.1)
         if verbose:
             print(f"\n📂 Contents of {path}:")
             print("\n".join(output))
@@ -76,7 +78,7 @@ def crawl_seestar():
         all_data = {}
 
         for folder in folder_names:
-            if folder in [".", ".."]:
+            if folder in [".", "..", "System Volume Information"]:
                 continue
             full_path = f"MyWorks/{folder}"
             all_data[folder] = crawl_folder(full_path)
