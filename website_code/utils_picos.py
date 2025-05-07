@@ -100,15 +100,15 @@ def get_sensor_values(sensor_name=None, port=SENSOR_PORT):
     """
     try:
         # Build the exec command
-        print(PICO_ADDR + str(port))
+        port_addr = PICO_ADDR + str(port)
         if sensor_name:
             cmd = [
-                "mpremote", "connect", PICO_ADDR+str(port),
+                "mpremote", "connect", port_addr,
                 "exec", f"sensor='{sensor_name}'; exec(open('pico_sensors_status.py').read())"
             ]
         else:
             cmd = [
-                "mpremote", "connect", port,
+                "mpremote", "connect", port_addr,
                 "exec", "exec(open('pico_sensors_status.py').read())"
             ]
 
