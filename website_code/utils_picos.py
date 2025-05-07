@@ -2,8 +2,11 @@ import subprocess
 import math
 from datetime import datetime
 
+SENSOR_PORT = "/dev/ttyACM0"
+SWITCH_PORT = "/dev/ttyACM1"
 
-def set_switch_device_action(device, action, port="/dev/ttyACM1"):
+
+def set_switch_device_action(device, action, port=SWITCH_PORT):
     device = device.capitalize()  # Normalize: fan → Fan, etc.
 
     # Normalize shorthand numeric actions
@@ -57,7 +60,7 @@ def set_switch_device_action(device, action, port="/dev/ttyACM1"):
         print(e.stderr or e.output)
 
 
-def get_switch_gpio_status(port="/dev/ttyACM1"):
+def get_switch_gpio_status(port=SWITCH_PORT):
     try:
         result = subprocess.run(
             [
@@ -88,7 +91,7 @@ def get_switch_gpio_status(port="/dev/ttyACM1"):
         return {}
 
 
-def get_sensor_values(sensor_name=None, port="/dev/ttyACM0"):
+def get_sensor_values(sensor_name=None, port=SENSOR_PORT):
     """
     Executes pico_sensors.py via mpremote, optionally filtering for one sensor.
     Returns a dictionary of key=value pairs.
