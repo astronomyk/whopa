@@ -1,9 +1,11 @@
+from sys import argv
 import subprocess
 import math
 from datetime import datetime
 
-SENSOR_PORT = "/dev/ttyACM0"
-SWITCH_PORT = "/dev/ttyACM1"
+PICO_ADDR = "/dev/ttyACM"
+SENSOR_PORT = 0
+SWITCH_PORT = 1
 
 
 def set_switch_device_action(device, action, port=SWITCH_PORT):
@@ -39,7 +41,7 @@ def set_switch_device_action(device, action, port=SWITCH_PORT):
     print(f"Sending command: {device} → {action}")
 
     cmd = [
-        "mpremote", "connect", port,
+        "mpremote", "connect", PICO_ADDR+str(port),
         "exec", f"device='{device}'; action='{action}'; exec(open('pico_switches_action.py').read())"
     ]
 
@@ -64,7 +66,7 @@ def get_switch_gpio_status(port=SWITCH_PORT):
     try:
         result = subprocess.run(
             [
-                "mpremote", "connect", port,
+                "mpremote", "connect", PICO_ADDR+str(port),
                 "exec", "exec(open('pico_switches_status.py').read())"
             ],
             capture_output=True,
@@ -100,7 +102,7 @@ def get_sensor_values(sensor_name=None, port=SENSOR_PORT):
         # Build the exec command
         if sensor_name:
             cmd = [
-                "mpremote", "connect", port,
+                "mpremote", "connect", PICO_ADDR+str(port),
                 "exec", f"sensor='{sensor_name}'; exec(open('pico_sensors_status.py').read())"
             ]
         else:
@@ -142,3 +144,50 @@ def compute_tilt_angle(x, y, z, in_degrees=True):
     angle_rad = math.acos(cos_theta)
     return math.degrees(angle_rad) if in_degrees else angle_rad
 
+
+if __name__ == "__main__":
+    import sys
+
+    if len(argv) < 2:
+        print("Usage:")
+        print("  get_sensor [sensor_name] [--port=N]")
+        print("  get_switch_state [--port=N]")
+        print("  set_switch <device> <action> [--port=N]")
+        sys.exit(1)
+
+    cmd = argv[1]
+    args = argv[2:]
+
+    # Default ports
+    port = None
+    port_override = [arg for arg in args if arg.startswith("--port=")]
+    if port_override:
+        port = int(port_override[0].split("=")[1])
+        args = [a for a in args if not a.startswith("--port=")]  # remove port arg
+
+    if cmd == "get_sensor":
+        sensor = args[0] if args else None
+        p = port if port is not None else SENSOR_PORT
+        values = get_sensor_values(sensor, port=p)
+        for k, v in values.items():
+            print(f"{k} = {v}")
+
+    elif cmd == "get_switch_state":
+        p = port if port is not None else SWITCH_PORT
+        gpio_status = get_switch_gpio_status(port=p)
+        for gpio, val in gpio_status.items():
+            print(f"GPIO {gpio}: {val}")
+
+    elif cmd == "set_switch":
+        if len(args) < 2:
+            print("Usage: set_switch <device> <action> [--port=N]")
+            sys.exit(1)
+        device = args[0]
+        action = args[1]
+        p = port if port is not None else SWITCH_PORT
+        set_switch_device_action(device, action, port=p)
+
+    else:
+        print(f"Unknown command: {cmd}")
+        print("Valid commands: get_sensor, get_switch_state, set_switch")
+        sys.exit(1)
