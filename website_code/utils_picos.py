@@ -85,7 +85,6 @@ def get_switch_gpio_status(port=SWITCH_PORT):
                     gpio_status[int(gpio)] = int(val)
                 except ValueError:
                     gpio_status[int(gpio)] = val  # in case of "ERR"
-        print(gpio_status)
         return gpio_status
 
     except subprocess.CalledProcessError as e:
