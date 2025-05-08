@@ -93,10 +93,16 @@ def capture_allsky_image(exposure_time_sec, gain=1, add_timestamp=False,
     timestamp = datetime.now(timezone.utc)
     timestamp_str = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
 
-    base = filename_stub.with_name(filename_stub.stem)
+    # Add timestamp to stem if requested
     if add_timestamp:
-        base += f"_{timestamp_str}"
+        base_name = f"{filename_stub.stem}_{timestamp_str}"
+    else:
+        base_name = filename_stub.stem
 
+    # Rebuild full path using original parent + new name
+    base = filename_stub.with_name(base_name)
+
+    # Final file paths
     jpeg_filename = base.with_suffix(".jpg")
     fits_filename = base.with_suffix(".fits")
 
