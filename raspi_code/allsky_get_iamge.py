@@ -1,4 +1,4 @@
-import sys
+import argparse
 from pathlib import Path
 import time
 from datetime import datetime, timezone
@@ -36,7 +36,8 @@ def get_zenith_radec(timestamp):
     return zenith_icrs.ra.deg, zenith_icrs.dec.deg
 
 
-def capture_allsky_image(exposure_time_sec, gain=1, filename_stub="allsky_image"):
+def capture_allsky_image(exposure_time_sec, gain=1, filename_stub="allsky_image", add_timestamp=False):
+
     exposure_time_us = int(exposure_time_sec * 1e6)
 
     picam2 = Picamera2()
@@ -88,11 +89,19 @@ def capture_allsky_image(exposure_time_sec, gain=1, filename_stub="allsky_image"
     filename_stub = Path(filename_stub)
     filename_stub.parent.mkdir(parents=True, exist_ok=True)
 
-    fits_filename = filename_stub.with_name(f"{filename_stub.stem}_{timestamp_str}.fits")
-    jpeg_filename = filename_stub.with_name(f"{filename_stub.stem}_{timestamp_str}.jpg")
+    timestamp = datetime.now(timezone.utc)
+    timestamp_str = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
 
-    hdul.writeto(fits_filename, overwrite=True)
+    if add_timestamp:
+        base = filename_stub.with_name(f"{filename_stub.stem}_{timestamp_str}")
+    else:
+        base = filename_stub
+
+    jpeg_filename = base.with_suffix(".jpg")
+    fits_filename = base.with_suffix(".fits")
+
     request.save("main", jpeg_filename)
+    hdul.writeto(fits_filename, overwrite=True)
 
     request.release()
     print(f"Saved JPEG to {jpeg_filename}")
@@ -101,16 +110,27 @@ def capture_allsky_image(exposure_time_sec, gain=1, filename_stub="allsky_image"
 
 # --- CLI Entrypoint ---
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python allsky_capture.py <exposure_time_sec> [gain] [filename_stub]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Capture all-sky image with "
+                                             "Raspberry Pi and IMX462 camera.")
+    parser.add_argument("exposure", type=float,
+                        help="Exposure time in seconds")
+    parser.add_argument("gain",
+                        type=float,
+                        nargs="?",
+                        default=1.0,
+                        help="Analog gain (default: 1)")
+    parser.add_argument("filename_stub",
+                        nargs="?",
+                        default="allsky_image",
+                        help="Base output filename (can include path)")
+    parser.add_argument("--add-timestamp", "-t",
+                        action="store_true",
+                        help="Append timestamp to filename")
 
-    try:
-        exposure_time_sec = float(sys.argv[1])
-        gain = float(sys.argv[2]) if len(sys.argv) >= 3 else 1
-        filename_stub = sys.argv[3] if len(sys.argv) >= 4 else "allsky_image"
-    except ValueError:
-        print("Invalid argument types. Exposure time and gain must be numbers.")
-        sys.exit(1)
+    args = parser.parse_args()
 
-    capture_allsky_image(exposure_time_sec, gain, filename_stub)
+    capture_allsky_image(exposure_time_sec=args.exposure,
+                         gain=args.gain,
+                         filename_stub=args.filename_stub,
+                         add_timestamp=args.add_timestamp)
+
