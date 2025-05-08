@@ -86,8 +86,6 @@ def capture_allsky_image(exposure_time_sec, gain=1, add_timestamp=False,
     primary = fits.PrimaryHDU()
     hdul = fits.HDUList([primary, hdu_r, hdu_g, hdu_b])
 
-    print("filename_stub:", filename_stub)
-
     # Extract directory from filename_stub and ensure it exists
     filename_stub = Path(filename_stub)
     filename_stub.parent.mkdir(parents=True, exist_ok=True)
@@ -95,13 +93,9 @@ def capture_allsky_image(exposure_time_sec, gain=1, add_timestamp=False,
     timestamp = datetime.now(timezone.utc)
     timestamp_str = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
 
-    print("filename_stub:", filename_stub)
-
     base = filename_stub.with_name(filename_stub.stem)
     if add_timestamp:
-        base += "_{timestamp_str}"
-
-    print("Save image base:", base)
+        base += f"_{timestamp_str}"
 
     jpeg_filename = base.with_suffix(".jpg")
     fits_filename = base.with_suffix(".fits")
@@ -139,4 +133,3 @@ if __name__ == "__main__":
                          gain=args.gain,
                          add_timestamp=args.add_timestamp,
                          filename_stub=args.filename_stub)
-

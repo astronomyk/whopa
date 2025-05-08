@@ -1,5 +1,8 @@
 from sys import argv
 import paramiko
+import re
+from pathlib import Path
+
 
 HOST = "10.42.0.143"
 USER = "ingo"
@@ -28,9 +31,41 @@ def run_remote_capture(pi_host=HOST, pi_user=USER, pi_password=PASSWD,
 
     print("=== STDOUT ===")
     print(output)
+
     if errors:
         print("=== STDERR ===")
         print(errors)
+
+    # --- Fetch files if filenames found ---
+    fits_match = re.search(r"Saved FITS to (.+\.fits)", output)
+    jpg_match = re.search(r"Saved JPEG to (.+\.jpg)", output)
+
+    if fits_match and jpg_match:
+        remote_fits = fits_match.group(1).strip()
+        remote_jpg = jpg_match.group(1).strip()
+
+        local_dir = Path("fetched_images")
+        local_dir.mkdir(exist_ok=True)
+
+        local_fits = local_dir / Path(remote_fits).name
+        local_jpg = local_dir / Path(remote_jpg).name
+
+        transport = paramiko.Transport((pi_host, 22))
+        transport.connect(username=pi_user, password=pi_password)
+        sftp = paramiko.SFTPClient.from_transport(transport)
+
+        print(f"Downloading: {remote_fits} → {local_fits}")
+        sftp.get(remote_fits, str(local_fits))
+
+        print(f"Downloading: {remote_jpg} → {local_jpg}")
+        sftp.get(remote_jpg, str(local_jpg))
+
+        sftp.close()
+        transport.close()
+
+        print("✅ Download complete.")
+    else:
+        print("⚠️ Could not find file paths in output. Nothing downloaded.")
 
 
 if __name__ == "__main__":
