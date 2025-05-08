@@ -36,7 +36,8 @@ def get_zenith_radec(timestamp):
     return zenith_icrs.ra.deg, zenith_icrs.dec.deg
 
 
-def capture_allsky_image(exposure_time_sec, gain=1, filename_stub="allsky_image", add_timestamp=False):
+def capture_allsky_image(exposure_time_sec, gain=1, add_timestamp=False,
+                         filename_stub="/home/ingo/allsky_output/allsky_image"):
 
     exposure_time_us = int(exposure_time_sec * 1e6)
 
@@ -131,6 +132,6 @@ if __name__ == "__main__":
 
     capture_allsky_image(exposure_time_sec=args.exposure,
                          gain=args.gain,
-                         filename_stub=args.filename_stub,
-                         add_timestamp=args.add_timestamp)
+                         add_timestamp=args.add_timestamp,
+                         filename_stub=args.filename_stub)
 

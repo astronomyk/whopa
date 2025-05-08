@@ -47,8 +47,7 @@ def capture_endpoint():
         return {"error": str(e)}, 500
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, threaded=True)
-
 # This can be called on the client side with extended timeout
 # response = requests.get(URL, timeout=120)  # allow long waits
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, threaded=True)
