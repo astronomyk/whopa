@@ -15,8 +15,9 @@ config = picam2.create_still_configuration(
 picam2.configure(config)
 
 # Set manual exposure
+dit = 0.1
 picam2.set_controls({
-    "ExposureTime": 5000000,
+    "ExposureTime": int(dit*1e6),
     "AnalogueGain": 4.0,
     "AeEnable": False
 })
