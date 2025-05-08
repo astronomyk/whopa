@@ -98,6 +98,8 @@ def capture_allsky_image(exposure_time_sec, gain=1, add_timestamp=False,
     else:
         base = filename_stub
 
+    print("Save image base:", base)
+
     jpeg_filename = base.with_suffix(".jpg")
     fits_filename = base.with_suffix(".fits")
 
