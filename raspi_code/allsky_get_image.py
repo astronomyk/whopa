@@ -86,6 +86,8 @@ def capture_allsky_image(exposure_time_sec, gain=1, add_timestamp=False,
     primary = fits.PrimaryHDU()
     hdul = fits.HDUList([primary, hdu_r, hdu_g, hdu_b])
 
+    print("filename_stub:", filename_stub)
+
     # Extract directory from filename_stub and ensure it exists
     filename_stub = Path(filename_stub)
     filename_stub.parent.mkdir(parents=True, exist_ok=True)
