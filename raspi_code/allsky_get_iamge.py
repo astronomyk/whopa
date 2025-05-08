@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 import time
 from datetime import datetime, timezone
 from picamera2 import Picamera2
@@ -58,9 +59,6 @@ def capture_allsky_image(exposure_time_sec, gain=1, filename_stub="allsky_image"
     timestamp = datetime.now(timezone.utc)
     timestamp_str = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
 
-    jpeg_filename = f"{filename_stub}_{timestamp_str}.jpg"
-    request.save("main", jpeg_filename)
-
     raw_array = request.make_array("raw")
     r, g, b = debayer_RGGB(raw_array)
 
@@ -86,8 +84,15 @@ def capture_allsky_image(exposure_time_sec, gain=1, filename_stub="allsky_image"
     primary = fits.PrimaryHDU()
     hdul = fits.HDUList([primary, hdu_r, hdu_g, hdu_b])
 
-    fits_filename = f"{filename_stub}_{timestamp_str}.fits"
+    # Extract directory from filename_stub and ensure it exists
+    filename_stub = Path(filename_stub)
+    filename_stub.parent.mkdir(parents=True, exist_ok=True)
+
+    fits_filename = filename_stub.with_name(f"{filename_stub.stem}_{timestamp_str}.fits")
+    jpeg_filename = filename_stub.with_name(f"{filename_stub.stem}_{timestamp_str}.jpg")
+
     hdul.writeto(fits_filename, overwrite=True)
+    request.save("main", jpeg_filename)
 
     request.release()
     print(f"Saved JPEG to {jpeg_filename}")
