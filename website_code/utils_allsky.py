@@ -19,6 +19,7 @@ def run_remote_capture(pi_host=HOST, pi_user=USER, pi_password=PASSWD,
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(pi_host, username=pi_user, password=pi_password)
 
+    print(f"Sending command: {command}")
     stdin, stdout, stderr = ssh.exec_command(command)
     output = stdout.read().decode()
     errors = stderr.read().decode()
