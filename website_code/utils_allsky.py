@@ -9,7 +9,7 @@ PASSWD = "monkey"
 def run_remote_capture(pi_host=HOST, pi_user=USER, pi_password=PASSWD,
                        exposure=1.0, gain=1.0, add_timestamp=False, stub=None):
 
-    command = f"python3 ~/whopa/raspi_code/allsky_capture.py {exposure} {gain}"
+    command = f"python3 ~/whopa/raspi_code/allsky_get_image.py {exposure} {gain}"
     if stub is not None:
         command += f" {stub}"
     if add_timestamp:
