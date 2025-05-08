@@ -93,10 +93,11 @@ def capture_allsky_image(exposure_time_sec, gain=1, add_timestamp=False,
     timestamp = datetime.now(timezone.utc)
     timestamp_str = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
 
+    print("filename_stub:", filename_stub)
+
+    base = filename_stub.with_name(filename_stub.stem)
     if add_timestamp:
-        base = filename_stub.with_name(f"{filename_stub.stem}_{timestamp_str}")
-    else:
-        base = filename_stub
+        base += "_{timestamp_str}"
 
     print("Save image base:", base)
 
