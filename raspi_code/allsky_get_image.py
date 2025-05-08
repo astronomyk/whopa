@@ -127,6 +127,7 @@ if __name__ == "__main__":
                         help="Analog gain (default: 1)")
     parser.add_argument("filename_stub",
                         nargs="?",
+                        default="/home/ingo/allsky_output/allsky_image",
                         help="Base output filename (can include path)")
     parser.add_argument("--add-timestamp", "-t",
                         action="store_true",
