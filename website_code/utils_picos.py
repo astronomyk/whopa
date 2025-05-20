@@ -4,8 +4,8 @@ import math
 from datetime import datetime
 
 PICO_ADDR = "/dev/ttyACM"
-SENSOR_PORT = 0
-SWITCH_PORT = 1
+SWITCH_PORT = 0
+SENSOR_PORT = 1
 
 
 def set_switch_device_action(device, action, port=SWITCH_PORT):
