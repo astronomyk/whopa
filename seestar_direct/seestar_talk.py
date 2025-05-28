@@ -48,8 +48,8 @@ def send_command(ip, command, params=None):
 def main():
     ip = DEFAULT_IP
 
-    arg = "get_setting"
-    params = {}
+    arg = "pi_set_time"
+    params = {"time_zone": "Australia/Melbourne"}
 
     # Send the selected command without checking a predefined list
     send_command(ip, arg, params)
