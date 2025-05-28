@@ -1,4 +1,3 @@
-import sys
 import socket
 import json
 
@@ -6,14 +5,14 @@ DEFAULT_IP = "10.42.0.236"
 DEFAULT_PORT = 4700
 
 
-def send_command(ip, command, params=None):
-    port = DEFAULT_PORT
+def send_command(params):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((ip, port))
-    # {"method":"scope_park","params":{"equ_mode":self.is_EQ_mode}}
-    cmd = {"id": 1, "method": command}
-    if isinstance(params, dict):
-        cmd["params"] = params
+    s.connect((DEFAULT_IP, DEFAULT_PORT))
+
+    # params = {"method":"scope_park","params":{"equ_mode":self.is_EQ_mode}}
+    cmd = {"id": 1}
+    cmd.update(params)
+
     message = json.dumps(cmd) + "\r\n"
     print(f"\nSending: {message.strip()}")
     s.sendall(message.encode())
@@ -43,17 +42,3 @@ def send_command(ip, command, params=None):
     except json.JSONDecodeError:
         print("⚠️ Could not parse response as JSON.")
         print("Raw response:\n", response)
-
-
-def main():
-    ip = DEFAULT_IP
-
-    arg = "pi_set_time"
-    params = {"time_zone": "Australia/Melbourne"}
-
-    # Send the selected command without checking a predefined list
-    send_command(ip, arg, params)
-
-
-if __name__ == "__main__":
-    main()
