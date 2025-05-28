@@ -6,11 +6,14 @@ DEFAULT_IP = "10.42.0.236"
 DEFAULT_PORT = 4700
 
 
-def send_command(ip, command):
+def send_command(ip, command, params=None):
     port = DEFAULT_PORT
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((ip, port))
+    # {"method":"scope_park","params":{"equ_mode":self.is_EQ_mode}}
     cmd = {"id": 1, "method": command}
+    if isinstance(params, dict):
+        cmd["params"] = params
     message = json.dumps(cmd) + "\r\n"
     print(f"\nSending: {message.strip()}")
     s.sendall(message.encode())
@@ -45,15 +48,11 @@ def send_command(ip, command):
 def main():
     ip = DEFAULT_IP
 
-    if len(sys.argv) < 2:
-        print("Usage:")
-        print("  python seestar_get_cli.py <get_command>")
-        sys.exit(1)
-
-    arg = sys.argv[1]
+    arg = "get_setting"
+    params = {}
 
     # Send the selected command without checking a predefined list
-    send_command(ip, arg)
+    send_command(ip, arg, params)
 
 
 if __name__ == "__main__":
