@@ -4,3 +4,6 @@ get_device_state
     mount
         equ_mode : false
 get_user_location
+
+pi_get_time
+pi_set_time
