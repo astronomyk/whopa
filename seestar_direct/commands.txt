@@ -1,9 +1,21 @@
 scope_get_track_state
+scope_get_horiz_coord
 scope_get_equ_coord
+scope_get_ra_dec
+
 get_device_state
     mount
         equ_mode : false
-get_user_location
 
+get_user_location
 pi_get_time
 pi_set_time
+
+scope_park
+    equ_mode: True
+
+
+
+http://100.73.152.103:7556/1/live/status
+http://<ip_addr>:<img_port>/1/live/status
+    Event descriptions and a HTML "live ticker" of
