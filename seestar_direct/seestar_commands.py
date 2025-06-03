@@ -1,6 +1,51 @@
-from time import sleep
+import json
+import socket
 from datetime import datetime
-from seestar_connect import send_command
+
+DEFAULT_IP = "10.42.0.236"
+DEFAULT_PORT = 4700
+
+
+def send_command(params, verbose=True):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((DEFAULT_IP, DEFAULT_PORT))
+
+    # params = {"method":"scope_park","params":{"equ_mode":self.is_EQ_mode}}
+    cmd = {"id": 1}
+    cmd.update(params)
+
+    message = json.dumps(cmd) + "\r\n"
+    print(f"\nSending: {message.strip()}")
+    s.sendall(message.encode())
+
+    # Read until we get a complete message (ends with \r\n)
+    response = ""
+    while "\r\n" not in response:
+        chunk = s.recv(4096).decode("utf-8")
+        if not chunk:
+            break
+        response += chunk
+
+    s.close()
+
+    if verbose:
+        try:
+            parsed = json.loads(response.split("\r\n")[0])
+            method = parsed.get("method")
+            result = parsed.get("result")
+            code = parsed.get("code")
+            error = parsed.get("error")
+
+            print("\n✅ Response:")
+            print(f"  method: {method}")
+            print(f"  result: {json.dumps(result, indent=2)}")
+            print(f"  code  : {code}")
+            print(f"  error : {error}")
+        except json.JSONDecodeError:
+            print("⚠️ Could not parse response as JSON.")
+            print("Raw response:\n", response)
+
+    return response
 
 
 def set_time():
@@ -42,19 +87,36 @@ def park_scope():
     return send_command(params)
 
 
+def goto(ra, dec):
+    """
+    ra : decimal hour angle [0, 24]
+    dec : decimal declination [-90, 90]
+    """
+    params = {'method': 'scope_goto', 'params': [ra, dec]}
+    return send_command(params)
+
+
+def goto_target(target_name, ra, dec):
+    """
+    ra : decimal hour angle [0, 24]
+    dec : decimal declination [-90, 90]
+    """
+    # params = {'method': 'scope_goto', 'params': [ra, dec]}
+    params = {'method': 'iscope_start_view', 'params': {'mode': 'star', 'target_ra_dec': [in_ra, in_dec], 'target_name': target_name, 'lp_filter': False}}
+    return send_command(params)
+
+
 def move(ra_dec=()):
     if isinstance(ra_dec, (tuple, list)) and len(ra_dec) == 2:
-        params = {'method': 'scope_goto', 'params': [ra_dec[0], ra_dec[1]]}
+        return goto(*ra_dec)
     elif isinstance(ra_dec, str):
         if ra_dec.lower() == "park":
-            params = {'method': 'scope_park'}
+            return park_scope()
         elif ra_dec.lower() == "horizon":
-            params = {'method': 'scope_park'}
+            return move_to_horizon()
     else:
         raise ValueError(
             f"ra_dec must be one of: [(ra, dec), 'park', 'horizon']: {ra_dec}")
-
-    return send_command(params)
 
 
 def get_coords():

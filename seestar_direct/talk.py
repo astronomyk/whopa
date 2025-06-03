@@ -1,6 +1,6 @@
 from time import sleep
 from datetime import datetime
-from seestar_connect import send_command
+from seestar_direct.seestar_commands import send_command
 
 params = {'method': 'scope_move_to_horizon'}
 # params = {'method': 'scope_park'}
@@ -21,10 +21,10 @@ params = {'method': 'scope_move_to_horizon'}
 # params = {'method': 'get_focuser_position'}
 send_command(params)
 
-for i in range(0):
-    sleep(2)
-    params = {'method': 'scope_get_horiz_coord'}
-    send_command(params)
-    sleep(0.5)
-    params = {'method': 'scope_get_equ_coord'}
-    send_command(params)
+# for i in range(0):
+#     sleep(2)
+#     params = {'method': 'scope_get_horiz_coord'}
+#     send_command(params)
+#     sleep(0.5)
+#     params = {'method': 'scope_get_equ_coord'}
+#     send_command(params)

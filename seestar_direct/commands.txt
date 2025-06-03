@@ -19,3 +19,7 @@ scope_park
 http://100.73.152.103:7556/1/live/status
 http://<ip_addr>:<img_port>/1/live/status
     Event descriptions and a HTML "live ticker" of
+
+
+goto_target
+"value": "{\"target_name\":\"kai32_NGC2244\", \"ra\":\"6h31m54.23s\", \"dec\":\"+4d56m26.4s\", \"is_j2000\":true}",
